@@ -143,30 +143,69 @@ class Employee extends CI_Controller{
             show_error('The employee you are trying to delete does not exist.');
     }
 
+    /*
+    *   Login by email and password function
+    */
     function login(){
-        print_r($_POST);
+        //var_dump($_POST);
+        //$this->load->library('session');
+
+        //**************FETCH DATA*****************
         $email = $this->input->post("email");
         $password = md5($this->input->post("password"));
-        if($email == "" || $password="")
+        $api = $this->input->post("api");
+
+        //***************CHECK IF ANY DATA IS SEND OR NOT
+        if(isset($_POST) && count($_POST) > 0)     
         {
             $employee = $this->Employee_model->get_employee_by_email_and_password($email,$password);
             if(isset($employee['email']))
             {
                 $data['result']="Success";
                 $data['message']="Logged in Successfully";
-                redirect("dashboard/index");
-            }else
+ 
+                $this->session->set_userdata('email',$email);
+
+                if($api == "1") { echo json_encode($data); }else{ redirect("dashboard/index"); }
+            }
+            else
             {
                 $data['result']="Failed";
                 $data['message']="Failed to login! Check your credentials";
             }
-        }else
-        {
-            $data['result']="Warning";
-            $data['message']="Enter your Email and Password";
         }
         $data['_view'] = 'employee/login';
-        $this->load->view('layouts/plain',$data);
+        $data['session'] = $this->session->userdata('email');
+
+        if($api == "1") { echo json_encode($data); }else{ $this->load->view('layouts/plain',$data); }
+        
+    }
+
+    /*
+    *   Logout function
+    */
+    function logout(){
+        $api = $this->input->post("api");
+
+        $user_data = $this->session->all_userdata();
+        foreach ($user_data as $key => $value) {
+            if ($key != 'session_id' && $key != 'ip_address' && $key != 'user_agent' && $key != 'last_activity') {
+                $this->session->unset_userdata($key);
+            }
+        }
+
+        if(isset($user_data['email'])){
+            $data['result']="Failed";
+            $data['message']="Failed to logout! Try Again";
+        }else{
+            $data['result']="Success";
+            $data['message']="Logged out successfully!";
+        }
+
+        $this->session->sess_destroy();
+        
+        if($api == "1") { echo json_encode($data); }else{ redirect('employee/login'); }
+        
     }
     
 }

@@ -14,13 +14,13 @@
     <?php }?>
     <p class="login-box-msg">Log in to start your session</p>
 
-    <form action="" method="post">
+    <?php echo form_open('employee/login'); ?>
       <div class="form-group has-feedback">
-        <input type="email" class="form-control" placeholder="Email">
+        <input name="email" type="email" class="form-control" placeholder="Email">
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" class="form-control" placeholder="Password">
+        <input name="password" type="password" class="form-control" placeholder="Password">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">
@@ -37,7 +37,7 @@
         </div>
         <!-- /.col -->
       </div>
-    </form>
+    <?php echo form_close(); ?>
 
     <div class="social-auth-links text-center">
       <p>- OR -</p>
